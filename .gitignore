@@ -1,0 +1,11 @@
+# Allow in source build
+[Bb]uild*/
+# Ignore qt files when importing CMakeLists
+*.users
+# Ignore CLion project files
+*.idea
+cmake-build*/
+# For macOs users
+.DS_Store
+# Ignore sublime merge file that can be created on merge fail
+Sublimerge*
