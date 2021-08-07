@@ -29,7 +29,11 @@ project(asio.cmake VERSION 1.0.0)
 set(ASIO_REPOSITORY "https://github.com/chriskohlhoff/asio" CACHE STRING "asio git repository url")
 set(ASIO_TAG "master" CACHE STRING "asio git tag")
 
+option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" OFF)
+
 include(FetchContent)
+
+## Declare ##
 
 FetchContent_Declare(
   asio
@@ -41,9 +45,23 @@ FetchContent_GetProperties(asio)
 
 if(NOT asio_POPULATED AND NOT TARGET asio)
 
-  message(STATUS "Download asio from ${ASIO_REPOSITORY}:${ASIO_TAG}")
+  ## Download ##
 
-  FetchContent_Populate(asio)
+  if(ASIO_USE_CPM)
+    include(cmake/CPM.cmake)
+    CPMAddPackage(
+      NAME asio
+      GIT_REPOSITORY ${ASIO_REPOSITORY}
+      GIT_TAG ${ASIO_TAG}
+      DOWNLOAD_ONLY
+    )
+  else()
+    message(STATUS "Download asio from ${ASIO_REPOSITORY}:${ASIO_TAG}")
+    FetchContent_Populate(asio)
+  endif()
+
+  # Configure ##
+
   add_library(asio STATIC src/asio.cpp)
   add_library(asio::asio ALIAS asio)
   target_include_directories(asio PUBLIC ${asio_SOURCE_DIR}/asio/include)
