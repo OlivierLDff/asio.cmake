@@ -54,4 +54,14 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
     -DASIO_SEPARATE_COMPILATION
   )
 
+  # Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
+  # https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
+  if (WIN32 AND CMAKE_SYSTEM_VERSION)
+    set(ver ${CMAKE_SYSTEM_VERSION})
+    string(REPLACE "." "" ver ${ver})
+    string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
+    set(version "0x${ver}")
+    target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
+  endif()
+
 endif()
