@@ -1,0 +1,35 @@
+name: 👷 compilation
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - ci
+
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  Test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        build_type: ['Release']
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      -
+        name: 🔧 asio
+        run: |
+          cmake -E make_directory build
+          cmake                                              \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"    \
+            -B build -S .
+        shell: bash
+      -
+        name: 🔨 asio
+        run: cmake --build build --target asio --config "${{ matrix.build_type }}" -j $(nproc)
