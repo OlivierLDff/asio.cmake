@@ -24,7 +24,7 @@
 
 cmake_minimum_required(VERSION 3.11.0)
 
-project(asio.cmake VERSION 1.0.0)
+project(asio.cmake VERSION 1.1.0)
 
 set(ASIO_REPOSITORY "https://github.com/chriskohlhoff/asio" CACHE STRING "asio git repository url")
 set(ASIO_TAG "master" CACHE STRING "asio git tag")
