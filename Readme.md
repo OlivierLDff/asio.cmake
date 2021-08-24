@@ -4,6 +4,8 @@ CMake wrapper to add [asio](https://github.com/chriskohlhoff/asio) with a simple
 
 ## 🚀 How to use
 
+### [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
+
 Use `FetchContent` to add this repository in your cmake script.
 
 ```cmake
@@ -22,10 +24,64 @@ FetchContent_MakeAvailable(asiocmake)
 target_link_libraries(myapp PRIVATE asio::asio)
 ```
 
+### [CPM](https://github.com/cpm-cmake/CPM.cmake)
+
+Or with CPM even an easier integration.
+
+```cmake
+include(cmake/CPM.cmake)
+
+CPMAddPackage(
+  NAME asiocmake
+  GIT_REPOSITORY "https://github.com/OlivierLDff/asio.cmake"
+  GIT_TAG "main"
+  OPTIONS "ASIO_USE_CPM ON"
+)
+
+# ...
+
+# Link to the created library asio::asio or asio
+target_link_libraries(myapp PRIVATE asio::asio)
+```
+
 ### Customization
 
 * `ASIO_REPOSITORY`: From where asio will be downloaded. *Default `https://github.com/chriskohlhoff/asio`*
 * `ASIO_TAG`: Tag of asio that will be used. *Default: `master`*
+* `ASIO_USE_CPM`: Download Asio with CPM instead of FetchContent. *Default: `OFF`*
+* `ASIO_ENABLE_EXAMPLES`: Add asio examples. *Default: `OFF`*
+
+## Asio
+
+Asio is a cross-platform C++ library for network and low-level I/O programming that provides developers with a consistent asynchronous model using a modern C++ approach.
+
+### What does Asio provide?
+
+Asio provides the basic building blocks for C++ networking, concurrency and other kinds of I/O.
+
+![](https://think-async.com/Asio/overview.gif)
+
+### What kind of applications can use Asio?
+
+Asio is used in all kinds of applications, from phone apps to the world’s fastest share markets.
+
+Here is a list of [some applications that use Asio](https://think-async.com/Asio/WhoIsUsingAsio.html).
+
+### Supported Platforms
+
+Asio is regularly tested with the following platforms:
+
+- Linux
+  - gcc 4.8 or later
+  - clang 3.0 or later
+- macOS
+  - Xcode8 or later using bundled clang
+- Windows
+  - Visual C++ 2013 or later
+- FreeBSD
+  - gcc 6.0 or later
+
+[More…](https://think-async.com/Asio/SupportedPlatforms.html)
 
 ## 📄 License
 
@@ -52,6 +108,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+Asio is released under the [Boost Software License](http://www.boost.org/LICENSE_1_0.txt).
 
 ## 👥 Authors
 
