@@ -65,6 +65,9 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
   add_library(asio::asio ALIAS asio)
   target_include_directories(asio PUBLIC ${asio_SOURCE_DIR}/asio/include)
 
+  find_package(Threads)
+  target_link_libraries(asio PRIVATE Threads::Threads)
+
   target_compile_features(asio PUBLIC cxx_std_11)
   target_compile_definitions(asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION)
 
