@@ -30,8 +30,12 @@ jobs:
           cmake                                              \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"    \
             -DASIO_USE_CPM="${{ matrix.use_cpm }}"           \
+            -DASIO_ENABLE_EXAMPLES=ON                        \
             -B build -S .
         shell: bash
       -
         name: 🔨 asio
         run: cmake --build build --target asio --config "${{ matrix.build_type }}" -j $(nproc)
+      -
+        name: 🔨 asio_examples
+        run: cmake --build build --target asio_examples --config "${{ matrix.build_type }}" -j $(nproc)

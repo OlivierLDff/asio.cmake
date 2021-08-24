@@ -28,6 +28,7 @@ set(ASIO_TAG
 )
 
 option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" OFF)
+option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" OFF)
 
 include(FetchContent)
 
@@ -75,5 +76,15 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
     set(version "0x${ver}")
     target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
   endif()
+
+endif()
+
+if(ASIO_ENABLE_EXAMPLES)
+  add_executable(asio_example_cpp03_timers_time_t_timer ${asio_SOURCE_DIR}/asio/src/examples/cpp03/timers/time_t_timer.cpp)
+  target_link_libraries(asio_example_cpp03_timers_time_t_timer PRIVATE asio::asio)
+
+  # todo : add all examples
+
+  add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
 
 endif()
