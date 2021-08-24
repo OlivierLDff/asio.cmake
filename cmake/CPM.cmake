@@ -1,6 +1,10 @@
-# https://github.com/cpm-cmake/CPM.cmake
+# https://github.com/OlivierLDff/CPM.cmake
 
-set(CPM_DOWNLOAD_VERSION 0.32.2)
+set(CPM_DOWNLOAD_VERSION "91585e3864cc0e2a140c70a57a05b76c12934419") # v0.32.2
+set(CPM_VERSION
+    "v0.32.2"
+    CACHE INTERNAL ""
+)
 
 if(CPM_SOURCE_CACHE)
   # Expand relative path. This is important if the provided path contains a tilde (~)
@@ -14,7 +18,7 @@ endif()
 
 if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
   message(STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}")
-  file(DOWNLOAD https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
+  file(DOWNLOAD https://raw.githubusercontent.com/OlivierLDff/CPM.cmake/${CPM_DOWNLOAD_VERSION}/cmake/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
 endif()
 
 include(${CPM_DOWNLOAD_LOCATION})
