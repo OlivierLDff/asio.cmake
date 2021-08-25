@@ -1,5 +1,7 @@
 # Asio.cmake
 
+[![👷 compilation](https://github.com/OlivierLDff/asio.cmake/actions/workflows/main.yml/badge.svg)](https://github.com/OlivierLDff/asio.cmake/actions/workflows/main.yml)
+
 CMake wrapper to add [asio](https://github.com/chriskohlhoff/asio) with a simple FetchContent as a static library.
 
 ## 🚀 How to use
