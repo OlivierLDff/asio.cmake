@@ -69,16 +69,16 @@ jobs:
         name: 🔧 Configure asio
         run: |
           cmake -E make_directory build
-          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }} \
-            cmake                                             \
-            -DASIO_USE_CPM="${{ matrix.use_cpm }}"            \
-            -DASIO_ENABLE_EXAMPLES=ON                         \
-            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"     \
+          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }}  \
+            cmake                                                         \
+            -DASIO_USE_CPM="${{ matrix.use_cpm }}"                        \
+            -DASIO_ENABLE_EXAMPLES=ON                                     \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                 \
             -B /src/build/ -S /src
       -
         name: 🔨 asio_examples
         run: |
           docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }} \
-            cmake --build build --target asio_examples        \
-              --config "${{ matrix.build_type }}"             \
+            cmake --build /src/build/ --target asio_examples             \
+              --config "${{ matrix.build_type }}"                        \
               -j $(nproc)
