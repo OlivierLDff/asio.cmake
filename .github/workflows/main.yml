@@ -39,3 +39,46 @@ jobs:
       -
         name: 🔨 asio_examples
         run: cmake --build build --target asio_examples --config "${{ matrix.build_type }}" -j $(nproc)
+
+  qemu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker_build_sha: ['29c05d13']
+        build_arch: [arm64, ppc64le, s390x]
+        build_type: ['Release']
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: 💎 Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+      -
+        name: 🔧 Prepare
+        id: prep
+        run: |
+          # Set output parameters.
+          export DOCKER_TAG="reivilo1234/cxx-cmake:${{ matrix.docker_build_sha }}-${{ matrix.build_arch }}"
+          echo ::set-output name=tags::${DOCKER_TAG}
+      -
+        name: 🔧 Configure asio
+        run: |
+          cmake -E make_directory build
+          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }}  \
+            cmake                                                         \
+            -DASIO_USE_CPM="${{ matrix.use_cpm }}"                        \
+            -DASIO_ENABLE_EXAMPLES=ON                                     \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                 \
+            -B /src/build/ -S /src
+      -
+        name: 🔨 asio_examples
+        run: |
+          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }} \
+            cmake --build /src/build/ --target asio_examples             \
+              --config "${{ matrix.build_type }}"                        \
+              -j $(nproc)
