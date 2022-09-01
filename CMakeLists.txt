@@ -16,7 +16,7 @@
 
 cmake_minimum_required(VERSION 3.11.0)
 
-project(asio.cmake VERSION 1.1.2)
+project(asio.cmake VERSION 1.1.3)
 
 set(ASIO_REPOSITORY
     "https://github.com/chriskohlhoff/asio"
