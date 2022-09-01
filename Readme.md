@@ -37,7 +37,7 @@ CPMAddPackage(
   NAME asiocmake
   GIT_REPOSITORY "https://github.com/OlivierLDff/asio.cmake"
   GIT_TAG "main"
-  OPTIONS "ASIO_USE_CPM ON"
+  OPTIONS "ASIO_USE_CPM ON" "ASIO_CPM_FETCHCONTENT_COMPAT OFF"
 )
 
 # ...
@@ -51,6 +51,9 @@ target_link_libraries(myapp PRIVATE asio::asio)
 * `ASIO_REPOSITORY`: From where asio will be downloaded. *Default `https://github.com/chriskohlhoff/asio`*
 * `ASIO_TAG`: Tag of asio that will be used. *Default: `master`*
 * `ASIO_USE_CPM`: Download Asio with CPM instead of FetchContent. *Default: `OFF`*
+* `ASIO_CPM_FETCHCONTENT_COMPAT`: Stay compatible in a build that use FetchContent when using CPM. *Default `ON`*
+  * It is recommended to set it OFF when using CPM, in order to use `CPM_SOURCE_CACHE`
+
 * `ASIO_ENABLE_EXAMPLES`: Add asio examples. *Default: `OFF`*
 
 ## Asio

@@ -28,19 +28,22 @@ set(ASIO_TAG
 )
 
 option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" OFF)
+option(ASIO_CPM_FETCHCONTENT_COMPAT "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work." ON)
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" OFF)
 
 include(FetchContent)
 
 # Declare ##
 
-FetchContent_Declare(
-  asio
-  GIT_REPOSITORY ${ASIO_REPOSITORY}
-  GIT_TAG ${ASIO_TAG}
-)
+if(ASIO_CPM_FETCHCONTENT_COMPAT)
+  FetchContent_Declare(
+    asio
+    GIT_REPOSITORY ${ASIO_REPOSITORY}
+    GIT_TAG ${ASIO_TAG}
+  )
 
-FetchContent_GetProperties(asio)
+  FetchContent_GetProperties(asio)
+endif()
 
 if(NOT asio_POPULATED AND NOT TARGET asio)
 
