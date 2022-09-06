@@ -32,18 +32,18 @@ set(ASIO_TAG
     CACHE STRING "asio git tag"
 )
 
-option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" OFF)
+option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" ON)
 option(
   ASIO_CPM_FETCHCONTENT_COMPAT
   "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work."
-  ON
+  OFF
 )
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TOP_LEVEL})
 
 # Declare ##
 
-if(ASIO_CPM_FETCHCONTENT_COMPAT)
+if(ASIO_CPM_FETCHCONTENT_COMPAT OR NOT ASIO_USE_CPM)
   include(FetchContent)
 
   FetchContent_Declare(

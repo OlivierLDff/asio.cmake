@@ -11,6 +11,13 @@ CMake wrapper to add [asio](https://github.com/chriskohlhoff/asio) with a simple
 Use `FetchContent` to add this repository in your cmake script.
 
 ```cmake
+# Force the script to use FetchContent and not CPM internally to fetch asio
+option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" OFF)
+option(
+  ASIO_CPM_FETCHCONTENT_COMPAT
+  "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work."
+  ON
+)
 # Download this repository
 include(FetchContent)
 FetchContent_Declare(
@@ -37,7 +44,6 @@ CPMAddPackage(
   NAME asiocmake
   GIT_REPOSITORY "https://github.com/OlivierLDff/asio.cmake"
   GIT_TAG "main"
-  OPTIONS "ASIO_USE_CPM ON" "ASIO_CPM_FETCHCONTENT_COMPAT OFF"
 )
 
 # ...
