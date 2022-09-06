@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        docker_build_sha: ['29c05d13']
+        docker_build_sha: ['10ce2eac']
         build_arch: [arm64, ppc64le, s390x]
         build_type: ['Release']
     steps:
