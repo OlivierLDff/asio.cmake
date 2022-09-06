@@ -39,6 +39,7 @@ option(
   ON
 )
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
+option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TOP_LEVEL})
 
 # Declare ##
 
@@ -52,6 +53,10 @@ if(ASIO_CPM_FETCHCONTENT_COMPAT)
   )
 
   FetchContent_GetProperties(asio)
+endif()
+
+if(ASIO_ENABLE_INSTALL)
+  include(GNUInstallDirs) # for CMAKE_INSTALL_INCLUDEDIR
 endif()
 
 if(NOT asio_POPULATED AND NOT TARGET asio)
@@ -88,7 +93,10 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 
   add_library(asio STATIC src/asio.cpp)
   add_library(asio::asio ALIAS asio)
-  target_include_directories(asio PUBLIC ${asio_SOURCE_DIR}/asio/include)
+  target_include_directories(
+    asio PUBLIC $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
 
   find_package(Threads)
   target_link_libraries(asio PRIVATE Threads::Threads)
@@ -120,4 +128,21 @@ if(ASIO_ENABLE_EXAMPLES)
   add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
   add_test(NAME asio_example COMMAND asio_example_cpp03_timers_time_t_timer)
 
+endif()
+
+if(ASIO_ENABLE_INSTALL)
+  include(cmake/CPM.cmake)
+  CPMAddPackage("gh:OlivierLDff/PackageProject.cmake@1.9.0")
+  packageProject(
+    NAME asio
+    VERSION ${ASIO_VERSION}
+    NAMESPACE asio
+    BINARY_DIR ${PROJECT_BINARY_DIR}
+    INCLUDE_DIR ${asio_SOURCE_DIR}/asio/include
+    INCLUDE_DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    INCLUDE_HEADER_PATTERN "*.hpp"
+    DISABLE_VERSION_SUFFIX YES
+    COMPATIBILITY SameMajorVersion
+    DEPENDENCIES "Threads"
+  )
 endif()

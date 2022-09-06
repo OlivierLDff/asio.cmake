@@ -55,6 +55,7 @@ target_link_libraries(myapp PRIVATE asio::asio)
   * It is recommended to set it OFF when using CPM, in order to use `CPM_SOURCE_CACHE`
 
 * `ASIO_ENABLE_EXAMPLES`: Add asio examples. *Default: `PROJECT_IS_TOP_LEVEL`*
+* `ASIO_ENABLE_INSTALL`: Install asio target. *Default: `PROJECT_IS_TOP_LEVEL`*
 
 ## Asio
 
