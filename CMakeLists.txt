@@ -71,6 +71,19 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
     FetchContent_Populate(asio)
   endif()
 
+  # Find Version ##
+  file(STRINGS "${asio_SOURCE_DIR}/asio/include/asio/version.hpp" ASIO_VERSION
+       REGEX "^#define ASIO_VERSION [0-9]+"
+  )
+  string(REGEX REPLACE "^#define ASIO_VERSION [0-9]+ // ([0-9.]+)$" "\\1" ASIO_VERSION
+                       "${ASIO_VERSION}"
+  )
+
+  set(ASIO_VERSION
+      ${ASIO_VERSION}
+      CACHE STRING "asio library verion" FORCE
+  )
+
   # Configure ##
 
   add_library(asio STATIC src/asio.cpp)
