@@ -29,8 +29,10 @@ jobs:
           cmake -E make_directory build
           cmake                                              \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"    \
+            -DCMAKE_INSTALL_PREFIX=build/output              \
             -DASIO_USE_CPM="${{ matrix.use_cpm }}"           \
             -DASIO_ENABLE_EXAMPLES=ON                        \
+            -DASIO_ENABLE_INSTALL=ON                         \
             -B build -S .
         shell: bash
       -
@@ -42,6 +44,20 @@ jobs:
       -
         name: ✅ Run tests
         run: cd build && ctest --build-config "${{ matrix.build_type }}" --progress --verbose
+      -
+        name: 📦️ install
+        run: cmake --build build --config "${{ matrix.build_type }}" --target install
+      -
+        name: 🔧 asio install test
+        run: |
+          cmake -E make_directory build-install
+          cmake -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"   \
+                -DCMAKE_PREFIX_PATH=$(pwd)/build/output        \
+                -B build-install -S ./tests/install
+        shell: bash
+      -
+        name: 🔨 install example
+        run: cmake --build build-install --config "${{ matrix.build_type }}" --target "time_t_timer" -j
 
   qemu:
     runs-on: ubuntu-latest
