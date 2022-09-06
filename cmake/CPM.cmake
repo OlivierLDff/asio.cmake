@@ -18,7 +18,11 @@ endif()
 
 if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
   message(STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}")
-  file(DOWNLOAD https://raw.githubusercontent.com/OlivierLDff/CPM.cmake/${CPM_DOWNLOAD_VERSION}/cmake/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
+  file(
+    DOWNLOAD
+    https://raw.githubusercontent.com/OlivierLDff/CPM.cmake/${CPM_DOWNLOAD_VERSION}/cmake/CPM.cmake
+    ${CPM_DOWNLOAD_LOCATION}
+  )
 endif()
 
 include(${CPM_DOWNLOAD_LOCATION})
