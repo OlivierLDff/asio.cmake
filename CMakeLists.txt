@@ -38,7 +38,7 @@ option(
   "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work."
   ON
 )
-option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" OFF)
+option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 
 include(FetchContent)
 

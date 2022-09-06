@@ -54,7 +54,7 @@ target_link_libraries(myapp PRIVATE asio::asio)
 * `ASIO_CPM_FETCHCONTENT_COMPAT`: Stay compatible in a build that use FetchContent when using CPM. *Default `ON`*
   * It is recommended to set it OFF when using CPM, in order to use `CPM_SOURCE_CACHE`
 
-* `ASIO_ENABLE_EXAMPLES`: Add asio examples. *Default: `OFF`*
+* `ASIO_ENABLE_EXAMPLES`: Add asio examples. *Default: `PROJECT_IS_TOP_LEVEL`*
 
 ## Asio
 
