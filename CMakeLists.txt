@@ -40,11 +40,11 @@ option(
 )
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 
-include(FetchContent)
-
 # Declare ##
 
 if(ASIO_CPM_FETCHCONTENT_COMPAT)
+  include(FetchContent)
+
   FetchContent_Declare(
     asio
     GIT_REPOSITORY ${ASIO_REPOSITORY}
