@@ -131,7 +131,6 @@ if(ASIO_ENABLE_EXAMPLES)
   target_link_libraries(asio_example_cpp03_timers_time_t_timer PRIVATE asio::asio)
   add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
   add_test(NAME asio_example COMMAND asio_example_cpp03_timers_time_t_timer)
-
 endif()
 
 if(ASIO_ENABLE_INSTALL)
