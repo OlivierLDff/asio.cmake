@@ -81,7 +81,9 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
   target_link_libraries(asio PRIVATE Threads::Threads)
 
   target_compile_features(asio PUBLIC cxx_std_11)
-  target_compile_definitions(asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION)
+  target_compile_definitions(
+    asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION -DASIO_NO_DEPRECATED
+  )
 
   # Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
   # https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
