@@ -96,14 +96,13 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 endif()
 
 if(ASIO_ENABLE_EXAMPLES)
+  enable_testing()
   add_executable(
     asio_example_cpp03_timers_time_t_timer
     ${asio_SOURCE_DIR}/asio/src/examples/cpp03/timers/time_t_timer.cpp
   )
   target_link_libraries(asio_example_cpp03_timers_time_t_timer PRIVATE asio::asio)
-
-  # todo : add all examples
-
   add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
+  add_test(NAME asio_example COMMAND asio_example_cpp03_timers_time_t_timer)
 
 endif()

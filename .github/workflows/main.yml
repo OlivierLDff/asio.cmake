@@ -39,6 +39,9 @@ jobs:
       -
         name: 🔨 asio_examples
         run: cmake --build build --target asio_examples --config "${{ matrix.build_type }}" -j $(nproc)
+      -
+        name: ✅ Run tests
+        run: cd build && ctest --build-config "${{ matrix.build_type }}" --progress --verbose
 
   qemu:
     runs-on: ubuntu-latest
