@@ -86,7 +86,7 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 
   set(ASIO_VERSION
       ${ASIO_VERSION}
-      CACHE STRING "asio library verion" FORCE
+      CACHE STRING "asio library version" FORCE
   )
 
   # Configure ##
