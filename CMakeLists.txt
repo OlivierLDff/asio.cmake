@@ -19,7 +19,7 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.21.0...3.24.0)
+cmake_minimum_required(VERSION 3.21...3.24)
 
 project(
   asio.cmake
@@ -47,39 +47,22 @@ option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TO
 
 # Declare ##
 
-if(ASIO_CPM_FETCHCONTENT_COMPAT OR NOT ASIO_USE_CPM)
-  include(FetchContent)
-
-  FetchContent_Declare(
-    asio
-    GIT_REPOSITORY ${ASIO_REPOSITORY}
-    GIT_TAG ${ASIO_TAG}
-  )
-
-  FetchContent_GetProperties(asio)
-endif()
-
 if(ASIO_ENABLE_INSTALL)
   include(GNUInstallDirs) # for CMAKE_INSTALL_INCLUDEDIR
 endif()
 
-if(NOT asio_POPULATED AND NOT TARGET asio)
+# Download ##
 
-  # Download ##
+include(cmake/CPM.cmake)
 
-  if(ASIO_USE_CPM)
-    include(cmake/CPM.cmake)
-    CPMAddPackage(
-      NAME asio
-      GIT_REPOSITORY ${ASIO_REPOSITORY}
-      GIT_TAG ${ASIO_TAG}
-      DOWNLOAD_ONLY TRUE
-    )
-  else()
-    message(STATUS "Download asio from ${ASIO_REPOSITORY}:${ASIO_TAG}")
-    FetchContent_Populate(asio)
-  endif()
+CPMAddPackage(
+  NAME asio
+  GIT_REPOSITORY ${ASIO_REPOSITORY}
+  GIT_TAG ${ASIO_TAG}
+  DOWNLOAD_ONLY TRUE
+)
 
+if(${asio_ADDED})
   # Find Version ##
   file(STRINGS "${asio_SOURCE_DIR}/asio/include/asio/version.hpp" ASIO_VERSION
        REGEX "^#define ASIO_VERSION [0-9]+"
@@ -93,33 +76,36 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
       CACHE STRING "asio library version" FORCE
   )
 
-  # Configure ##
+else()
+  message(FATAL_ERROR "asio not populated!")
+  return()
+endif()
 
-  add_library(asio STATIC src/asio.cpp)
-  add_library(asio::asio ALIAS asio)
-  target_include_directories(
-    asio PUBLIC $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
-                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  )
+# Configure ##
 
-  find_package(Threads)
-  target_link_libraries(asio PRIVATE Threads::Threads)
+add_library(asio STATIC src/asio.cpp)
+add_library(asio::asio ALIAS asio)
+target_include_directories(
+  asio PUBLIC $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
+              $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
-  target_compile_features(asio PUBLIC cxx_std_11)
-  target_compile_definitions(
-    asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION -DASIO_NO_DEPRECATED
-  )
+find_package(Threads)
+target_link_libraries(asio PRIVATE Threads::Threads)
 
-  # Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
-  # https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
-  if(WIN32 AND CMAKE_SYSTEM_VERSION)
-    set(ver ${CMAKE_SYSTEM_VERSION})
-    string(REPLACE "." "" ver ${ver})
-    string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
-    set(version "0x${ver}")
-    target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
-  endif()
+target_compile_features(asio PUBLIC cxx_std_17)
+target_compile_definitions(
+  asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION -DASIO_NO_DEPRECATED
+)
 
+# Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
+# https://stackoverflow.com/questions/9742003/platform-detection-in-cmake
+if(WIN32 AND CMAKE_SYSTEM_VERSION)
+  set(ver ${CMAKE_SYSTEM_VERSION})
+  string(REPLACE "." "" ver ${ver})
+  string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
+  set(version "0x${ver}")
+  target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
 endif()
 
 if(ASIO_ENABLE_EXAMPLES)
@@ -134,8 +120,7 @@ if(ASIO_ENABLE_EXAMPLES)
 endif()
 
 if(ASIO_ENABLE_INSTALL)
-  include(cmake/CPM.cmake)
-  CPMAddPackage("gh:OlivierLDff/PackageProject.cmake@1.9.0")
+  CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.9.0")
   packageProject(
     NAME asio
     VERSION ${ASIO_VERSION}
