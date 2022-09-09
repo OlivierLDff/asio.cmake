@@ -27,6 +27,8 @@ project(
   LANGUAGES CXX
 )
 
+# Declare ##
+
 set(ASIO_REPOSITORY
     "https://github.com/chriskohlhoff/asio"
     CACHE STRING "asio git repository url"
@@ -36,20 +38,10 @@ set(ASIO_TAG
     CACHE STRING "asio git tag"
 )
 
-option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" ON)
-option(
-  ASIO_CPM_FETCHCONTENT_COMPAT
-  "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work."
-  OFF
-)
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TOP_LEVEL})
 
-# Declare ##
-
-if(ASIO_ENABLE_INSTALL)
-  include(GNUInstallDirs) # for CMAKE_INSTALL_INCLUDEDIR
-endif()
+include(GNUInstallDirs) # for CMAKE_INSTALL_INCLUDEDIR
 
 # Download ##
 
@@ -75,11 +67,15 @@ if(${asio_ADDED})
       ${ASIO_VERSION}
       CACHE STRING "asio library version" FORCE
   )
-
 else()
   message(FATAL_ERROR "asio not populated!")
+
   return()
 endif()
+
+# Dependencies ##
+
+find_package(Threads)
 
 # Configure ##
 
@@ -89,10 +85,7 @@ target_include_directories(
   asio PUBLIC $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-
-find_package(Threads)
 target_link_libraries(asio PRIVATE Threads::Threads)
-
 target_compile_features(asio PUBLIC cxx_std_17)
 target_compile_definitions(
   asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION -DASIO_NO_DEPRECATED
@@ -108,6 +101,8 @@ if(WIN32 AND CMAKE_SYSTEM_VERSION)
   target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
 endif()
 
+# Examples, tests, ... ##
+
 if(ASIO_ENABLE_EXAMPLES)
   enable_testing()
   add_executable(
@@ -118,6 +113,8 @@ if(ASIO_ENABLE_EXAMPLES)
   add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
   add_test(NAME asio_example COMMAND asio_example_cpp03_timers_time_t_timer)
 endif()
+
+# Install ##
 
 if(ASIO_ENABLE_INSTALL)
   CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.9.0")
