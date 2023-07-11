@@ -2,9 +2,29 @@
 
 [![👷 compilation](https://github.com/OlivierLDff/asio.cmake/actions/workflows/main.yml/badge.svg)](https://github.com/OlivierLDff/asio.cmake/actions/workflows/main.yml)
 
-CMake wrapper to add [asio](https://github.com/chriskohlhoff/asio) with a simple FetchContent as a static library.
+CMake wrapper to add [asio](https://github.com/chriskohlhoff/asio) with a simple FetchContent as a static library or as a CMake find module.
 
 ## 🚀 How to use
+
+### [CMake Find Module](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html#find-modules)
+
+Use `CMake Find Module` mode if you have installed asio on your system.
+Compared to `FetchContent`, this allows your system's package manager to verify version compatability.
+Addtionally, this method allows multiple applications to be guaranteed the same version.
+
+TODO: How should users add `/path/to/asio.cmake/cmake` to `CMAKE_MODULE_PATH`?
+
+To find whatever version in currently installed, regardless of the version:
+```cmake
+find_package(ASIO MODULE REQUIRED)
+target_link_libraries(myapp PRIVATE asio::asio)
+```
+
+To specify the exact version required:
+```cmake
+find_package(ASIO 1.18.1 EXACT MODULE REQUIRED)
+target_link_libraries(myapp PRIVATE asio::asio)
+```
 
 ### [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html)
 
@@ -126,3 +146,4 @@ Asio is released under the [Boost Software License](http://www.boost.org/LICENSE
 ## 👥 Authors
 
 - [Olivier LDff](https://github.com/OlivierLDff/NetTcpJson/blob/main/olivier.ldff@gmail.com)
+- [Ryan Friedman](https://github.com/Ryanf55)
