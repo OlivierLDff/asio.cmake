@@ -75,22 +75,18 @@ set(ASIO_VERSION
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ASIO
-  FOUND_VAR ASIO_FOUND
   REQUIRED_VARS
     ASIO_INCLUDE_DIR
-    ASIO_VERSION_MAJOR
-    ASIO_VERSION_MINOR
-    ASIO_VERSION_PATCH
-    ASIO_VERSION
   VERSION_VAR ASIO_VERSION
 )
-if(ASIO_FOUND AND NOT TARGET asio::asio)
+
+if("${ASIO_FOUND}" AND NOT TARGET asio::asio)
   add_library(asio IMPORTED INTERFACE)
   add_library(asio::asio ALIAS asio)
-  target_include_directories(asio INTERFACE ${Asio_INCLUDE_DIR})
+  target_include_directories(asio INTERFACE ${ASIO_INCLUDE_DIR})
   target_compile_definitions(asio
     INTERFACE
-      # ASIO_STANDALONE
+      ASIO_STANDALONE
   )
   find_package(Threads REQUIRED)
   target_link_libraries(asio INTERFACE Threads::Threads)
