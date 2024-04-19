@@ -19,13 +19,21 @@
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.21.0...3.24.0)
+cmake_minimum_required(VERSION 3.14.0...3.24.0)
 
 project(
   asio.cmake
   VERSION 1.2.0
   LANGUAGES CXX
 )
+
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+  # PROJECT_IS_TOP_LEVEL is defined automatically
+elseif (CMAKE_CURRENT_BINARY_DIR STREQUAL CMAKE_BINARY_DIR)
+  set(PROJECT_IS_TOP_LEVEL TRUE)
+else()
+  set(PROJECT_IS_TOP_LEVEL FALSE)
+endif()
 
 set(ASIO_REPOSITORY
     "https://github.com/chriskohlhoff/asio"
