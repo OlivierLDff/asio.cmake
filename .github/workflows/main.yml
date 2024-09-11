@@ -3,13 +3,11 @@ name: 👷 compilation
 on:
   push:
     branches:
-      - master
       - main
       - ci
 
   pull_request:
     branches:
-      - master
       - main
 
 jobs:
@@ -17,84 +15,80 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        use_cpm: ['ON', 'OFF']
-        build_type: ['Release']
+        use_cpm: ["ON", "OFF"]
+        no_deprecated: ["ON", "OFF"]
+        build_type: ["Release"]
         os: [ubuntu-latest, macos-latest, windows-latest]
-        cmake_version: [ latestrc ]
+        cmake_version: [latestrc]
         include:
           - os: ubuntu-latest
             cmake_version: 3.14
           - os: ubuntu-latest
-            cmake_version: 3.24
+            cmake_version: 3.30
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: lukka/get-cmake@latest
         with:
           cmakeVersion: ${{ matrix.cmake_version }}
-      -
-        name: 🔧 asio
+      - name: 🔧 asio
         run: |
           cmake -E make_directory build
-          cmake                                              \
-            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"    \
-            -DCMAKE_INSTALL_PREFIX=build/output              \
-            -DASIO_USE_CPM="${{ matrix.use_cpm }}"           \
-            -DASIO_ENABLE_EXAMPLES=ON                        \
-            -DASIO_ENABLE_INSTALL=ON                         \
+          cmake                                                \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"      \
+            -DCMAKE_INSTALL_PREFIX=build/output                \
+            -DASIO_USE_CPM="${{ matrix.use_cpm }}"             \
+            -DASIO_NO_DEPRECATED="${{ matrix.no_deprecated }}" \
+            -DASIO_ENABLE_EXAMPLES=ON                          \
+            -DASIO_ENABLE_INSTALL=ON                           \
             -B build -S .
         shell: bash
-      -
-        name: 🔨 asio
+      - name: 🔨 asio
         run: cmake --build build --target asio --config "${{ matrix.build_type }}" -j $(nproc)
-      -
-        name: 🔨 asio_examples
+      - name: 🔨 asio_examples
         run: cmake --build build --target asio_examples --config "${{ matrix.build_type }}" -j $(nproc)
-      -
-        name: ✅ Run tests
+      - name: ✅ Run tests
         run: cd build && ctest --build-config "${{ matrix.build_type }}" --progress --verbose
-      -
-        name: 📦️ install
+      - name: 📦️ install
         run: cmake --build build --config "${{ matrix.build_type }}" --target install
-      -
-        name: 🔧 asio install test
+      - name: 🔧 asio install test
         run: |
           cmake -E make_directory build-install
           cmake -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"   \
                 -DCMAKE_PREFIX_PATH=$(pwd)/build/output        \
                 -B build-install -S ./tests/install
         shell: bash
-      -
-        name: 🔨 install example
+      - name: 🔨 install example
         run: cmake --build build-install --config "${{ matrix.build_type }}" --target "time_t_timer" -j
 
   qemu:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        docker_build_sha: ['10ce2eac']
+        use_cpm: ["ON", "OFF"]
+        docker_build_sha: ["10ce2eac"]
         build_arch: [arm64, ppc64le, s390x]
-        build_type: ['Release']
+        build_type: ["Release"]
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: 💎 Set up QEMU
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 💎 Set up QEMU
         id: qemu
         uses: docker/setup-qemu-action@v1
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
-      -
-        name: 🔧 Prepare
+      - name: 🔧 Prepare
         id: prep
         run: |
           # Set output parameters.
           export DOCKER_TAG="reivilo1234/cxx-cmake:${{ matrix.docker_build_sha }}-${{ matrix.build_arch }}"
           echo ::set-output name=tags::${DOCKER_TAG}
-      -
-        name: 🔧 Configure asio
+      - name: 🔧 Configure asio
         run: |
           cmake -E make_directory build
           docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }}  \
@@ -103,8 +97,7 @@ jobs:
             -DASIO_ENABLE_EXAMPLES=ON                                     \
             -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                 \
             -B /src/build/ -S /src
-      -
-        name: 🔨 asio_examples
+      - name: 🔨 asio_examples
         run: |
           docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }} \
             cmake --build /src/build/ --target asio_examples             \
