@@ -76,7 +76,7 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
   # Download ##
 
   if(ASIO_USE_CPM)
-    include(cmake/CPM.cmake)
+    include(cmake/get_cpm.cmake)
     CPMAddPackage(
       NAME asio
       GIT_REPOSITORY ${ASIO_REPOSITORY}
@@ -143,7 +143,7 @@ if(ASIO_ENABLE_EXAMPLES)
 endif()
 
 if(ASIO_ENABLE_INSTALL)
-  include(cmake/CPM.cmake)
+  include(cmake/get_cpm.cmake)
   CPMAddPackage("gh:OlivierLDff/PackageProject.cmake@1.9.0")
   packageProject(
     NAME asio
