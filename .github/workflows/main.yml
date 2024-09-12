@@ -28,7 +28,7 @@ jobs:
             cmake_version: 3.24
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
         with:
           cmakeVersion: ${{ matrix.cmake_version }}
@@ -78,7 +78,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       -
         name: 💎 Set up QEMU
         id: qemu
