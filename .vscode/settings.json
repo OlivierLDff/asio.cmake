@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "files.associations": {
+        ".cmake-format": "yaml"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "off"
+    }
+}
