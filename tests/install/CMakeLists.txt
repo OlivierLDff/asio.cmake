@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(asio-cmake-install LANGUAGES CXX)
 find_package(asio REQUIRED)
 add_executable(time_t_timer time_t_timer.cpp)
