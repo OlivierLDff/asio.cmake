@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "cheshirekow.cmake-format",
+        "EditorConfig.EditorConfig",
+        "github.vscode-github-actions",
+        "ms-vscode.cpptools-extension-pack",
+        "usernamehw.errorlens"
+    ]
+}
