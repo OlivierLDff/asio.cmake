@@ -28,10 +28,8 @@ project(
   DESCRIPTION "CMake wrapper to add Asio library"
 )
 
-# Determine if subproject (using add_subdirectory) or if main project
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
-  # PROJECT_IS_TOP_LEVEL is defined automatically
-else()
+# Define PROJECT_IS_TOP_LEVEL if not available
+if(CMAKE_VERSION VERSION_LESS "3.21")
   string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" PROJECT_IS_TOP_LEVEL)
 endif()
 
