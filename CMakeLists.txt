@@ -40,7 +40,7 @@ set(ASIO_REPOSITORY
     CACHE STRING "asio git repository url"
 )
 set(ASIO_TAG
-    "asio-1-24-0"
+    "asio-1-31-0"
     CACHE STRING "asio git tag"
 )
 
