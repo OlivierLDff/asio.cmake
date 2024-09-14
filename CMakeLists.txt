@@ -142,9 +142,12 @@ if(ASIO_ENABLE_EXAMPLES)
 
 endif()
 
+#
+# Install
+#
 if(ASIO_ENABLE_INSTALL)
   include(cmake/get_cpm.cmake)
-  CPMAddPackage("gh:OlivierLDff/PackageProject.cmake@1.9.0")
+  CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
   packageProject(
     NAME asio
     VERSION ${ASIO_VERSION}
