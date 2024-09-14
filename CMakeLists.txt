@@ -47,6 +47,7 @@ option(
   "Should asio be declared with FetchContent functions to be compatible. This doesn't not allow CPM cache to work."
   OFF
 )
+option(ASIO_NO_DEPRECATED "Disables Asio deprecated interfaces and functionality" ON)
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TOP_LEVEL})
 
@@ -115,7 +116,7 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 
   target_compile_features(asio PUBLIC cxx_std_11)
   target_compile_definitions(
-    asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION -DASIO_NO_DEPRECATED
+    asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION $<$<BOOL:${ASIO_NO_DEPRECATED}>:ASIO_NO_DEPRECATED>
   )
 
   # Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
