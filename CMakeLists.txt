@@ -40,7 +40,7 @@ set(ASIO_REPOSITORY
     CACHE STRING "asio git repository url"
 )
 set(ASIO_TAG
-    "asio-1-24-0"
+    "asio-1-31-0"
     CACHE STRING "asio git tag"
 )
 
@@ -76,7 +76,10 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
   # Download ##
 
   if(ASIO_USE_CPM)
-    include(cmake/get_cpm.cmake)
+    # Include CPM only if not already initialized
+    if(NOT CPM_INITIALIZED)
+      include(cmake/get_cpm.cmake)
+    endif()
     CPMAddPackage(
       NAME asio
       GIT_REPOSITORY ${ASIO_REPOSITORY}
@@ -130,23 +133,27 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 
 endif()
 
+#
+# Examples
+#
 if(ASIO_ENABLE_EXAMPLES)
   enable_testing()
   add_executable(
-    asio_example_cpp03_timers_time_t_timer
-    ${asio_SOURCE_DIR}/asio/src/examples/cpp03/timers/time_t_timer.cpp
+    asio_example_cpp11_timers_time_t_timer
+    ${asio_SOURCE_DIR}/asio/src/examples/cpp11/timers/time_t_timer.cpp
   )
-  target_link_libraries(asio_example_cpp03_timers_time_t_timer PRIVATE asio::asio)
-  add_custom_target(asio_examples DEPENDS asio_example_cpp03_timers_time_t_timer)
-  add_test(NAME asio_example COMMAND asio_example_cpp03_timers_time_t_timer)
-
+  target_link_libraries(asio_example_cpp11_timers_time_t_timer PRIVATE asio::asio)
+  add_custom_target(asio_examples DEPENDS asio_example_cpp11_timers_time_t_timer)
+  add_test(NAME asio_example COMMAND asio_example_cpp11_timers_time_t_timer)
 endif()
 
 #
 # Install
 #
 if(ASIO_ENABLE_INSTALL)
-  include(cmake/get_cpm.cmake)
+  if(NOT CPM_INITIALIZED)
+    include(cmake/get_cpm.cmake)
+  endif()
   CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
   packageProject(
     NAME asio
