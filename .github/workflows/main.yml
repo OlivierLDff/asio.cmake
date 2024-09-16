@@ -23,11 +23,21 @@ jobs:
         no_deprecated: ['ON', 'OFF']
         build_type: ['Release']
         os: [ubuntu-latest, macos-latest, windows-latest]
-        cmake_version: [ latestrc ]
+        cmake_version: [latestrc]
         include:
-          - os: ubuntu-latest
+          - use_cpm: 'ON'
+            separate_compilation: 'ON'
+            dyn_link: 'OFF'
+            no_deprecated: 'ON'
+            build_type: 'Release'
+            os: ubuntu-latest
             cmake_version: 3.14
-          - os: ubuntu-latest
+          - use_cpm: 'ON'
+            separate_compilation: 'ON'
+            dyn_link: 'OFF'
+            no_deprecated: 'ON'
+            build_type: 'Release'
+            os: ubuntu-latest
             cmake_version: 3.24
 
     steps:
