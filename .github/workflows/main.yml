@@ -18,6 +18,8 @@ jobs:
     strategy:
       matrix:
         use_cpm: ['ON', 'OFF']
+        separate_compilation: ['ON', 'OFF']
+        dyn_link: ['ON', 'OFF']
         no_deprecated: ['ON', 'OFF']
         build_type: ['Release']
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -37,17 +39,20 @@ jobs:
         name: 🔧 asio
         run: |
           cmake -E make_directory build
-          cmake                                                 \
-            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"       \
-            -DCMAKE_INSTALL_PREFIX=build/output                 \
-            -DASIO_USE_CPM="${{ matrix.use_cpm }}"              \
-            -DASIO_NO_DEPRECATED="${{ matrix.no_deprecated }}"  \
-            -DASIO_ENABLE_EXAMPLES=ON                           \
-            -DASIO_ENABLE_INSTALL=ON                            \
+          cmake                                                               \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                     \
+            -DCMAKE_INSTALL_PREFIX=build/output                               \
+            -DASIO_USE_CPM="${{ matrix.use_cpm }}"                            \
+            -DASIO_SEPARATE_COMPILATION="${{ matrix.separate_compilation }}"  \
+            -DASIO_DYN_LINK="${{ matrix.dyn_link }}"                          \
+            -DASIO_NO_DEPRECATED="${{ matrix.no_deprecated }}"                \
+            -DASIO_ENABLE_EXAMPLES=ON                                         \
+            -DASIO_ENABLE_INSTALL=ON                                          \
             -B build -S .
         shell: bash
       -
         name: 🔨 asio
+        if: matrix.dyn_link == 'OFF'
         run: cmake --build build --target asio --config "${{ matrix.build_type }}" -j $(nproc)
       -
         name: 🔨 asio_examples
@@ -99,12 +104,14 @@ jobs:
         name: 🔧 Configure asio
         run: |
           cmake -E make_directory build
-          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }}  \
-            cmake                                                         \
-            -DASIO_USE_CPM="${{ matrix.use_cpm }}"                        \
-            -DASIO_NO_DEPRECATED="${{ matrix.no_deprecated }}"            \
-            -DASIO_ENABLE_EXAMPLES=ON                                     \
-            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                 \
+          docker run --rm -v $(pwd):/src/ ${{ steps.prep.outputs.tags }}      \
+            cmake                                                             \
+            -DASIO_USE_CPM="${{ matrix.use_cpm }}"                            \
+            -DASIO_SEPARATE_COMPILATION="${{ matrix.separate_compilation }}"  \
+            -DASIO_DYN_LINK="${{ matrix.dyn_link }}"                          \
+            -DASIO_NO_DEPRECATED="${{ matrix.no_deprecated }}"                \
+            -DASIO_ENABLE_EXAMPLES=ON                                         \
+            -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"                     \
             -B /src/build/ -S /src
       -
         name: 🔨 asio_examples

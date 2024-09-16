@@ -32,6 +32,10 @@ if(CMAKE_VERSION VERSION_LESS "3.21")
   string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" PROJECT_IS_TOP_LEVEL)
 endif()
 
+#
+# Options
+#
+include(CMakeDependentOption)
 set(ASIO_REPOSITORY
     "https://github.com/chriskohlhoff/asio"
     CACHE STRING "asio git repository url"
@@ -40,7 +44,6 @@ set(ASIO_TAG
     "asio-1-31-0"
     CACHE STRING "asio git tag"
 )
-
 option(ASIO_USE_CPM "Download Asio with CPM instead of FetchContent" ON)
 option(
   ASIO_CPM_FETCHCONTENT_COMPAT
@@ -48,8 +51,29 @@ option(
   OFF
 )
 option(ASIO_NO_DEPRECATED "Disables Asio deprecated interfaces and functionality" ON)
+option(ASIO_SEPARATE_COMPILATION "Uses separately compiled source code for Asio's implementation"
+       ON
+)
+cmake_dependent_option(
+  ASIO_DYN_LINK
+  "Uses separately compiled source code for Asio's implementation, with symbols exported for inclusion as part of a shared library"
+  OFF
+  "ASIO_SEPARATE_COMPILATION"
+  OFF
+)
 option(ASIO_ENABLE_EXAMPLES "add one example to test binding/compilation" ${PROJECT_IS_TOP_LEVEL})
 option(ASIO_ENABLE_INSTALL "Install the asio standalone library" ${PROJECT_IS_TOP_LEVEL})
+
+#
+# Library type
+#
+if(NOT ASIO_SEPARATE_COMPILATION)
+  set(ASIO_LIBRARY_TYPE INTERFACE)
+elseif(NOT ASIO_DYN_LINK)
+  set(ASIO_LIBRARY_TYPE STATIC)
+else()
+  set(ASIO_LIBRARY_TYPE SHARED)
+endif()
 
 # Declare ##
 
@@ -102,21 +126,42 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
       CACHE STRING "asio library version" FORCE
   )
 
+  # Library scopes
+  if(ASIO_LIBRARY_TYPE STREQUAL INTERFACE)
+    set(ASIO_TARGET_INCLUDE_DIRECTORIES_SCOPE INTERFACE)
+    set(ASIO_TARGET_LINK_LIBRARIES_SCOPE INTERFACE)
+    set(ASIO_TARGET_COMPILE_FEATURES_SCOPE INTERFACE)
+    set(ASIO_TARGET_COMPILE_DEFINITIONS_SCOPE INTERFACE)
+  else()
+    set(ASIO_TARGET_INCLUDE_DIRECTORIES_SCOPE PUBLIC)
+    set(ASIO_TARGET_LINK_LIBRARIES_SCOPE PRIVATE)
+    set(ASIO_TARGET_COMPILE_FEATURES_SCOPE PUBLIC)
+    set(ASIO_TARGET_COMPILE_DEFINITIONS_SCOPE PUBLIC)
+  endif()
+
   # Configure ##
 
-  add_library(asio STATIC src/asio.cpp)
+  add_library(
+    asio ${ASIO_LIBRARY_TYPE} $<$<NOT:$<STREQUAL:${ASIO_LIBRARY_TYPE},INTERFACE>>:src/asio.cpp>
+  )
   add_library(asio::asio ALIAS asio)
   target_include_directories(
-    asio PUBLIC $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
-                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    asio SYSTEM ${ASIO_TARGET_INCLUDE_DIRECTORIES_SCOPE}
+    $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
   find_package(Threads)
-  target_link_libraries(asio PRIVATE Threads::Threads)
+  target_link_libraries(asio ${ASIO_TARGET_LINK_LIBRARIES_SCOPE} Threads::Threads)
 
-  target_compile_features(asio PUBLIC cxx_std_11)
+  target_compile_features(asio ${ASIO_TARGET_COMPILE_FEATURES_SCOPE} cxx_std_11)
   target_compile_definitions(
-    asio PUBLIC -DASIO_STANDALONE -DASIO_SEPARATE_COMPILATION $<$<BOOL:${ASIO_NO_DEPRECATED}>:ASIO_NO_DEPRECATED>
+    asio
+    ${ASIO_TARGET_COMPILE_DEFINITIONS_SCOPE}
+    -DASIO_STANDALONE
+    $<$<NOT:$<STREQUAL:${ASIO_LIBRARY_TYPE},INTERFACE>>:ASIO_SEPARATE_COMPILATION>
+    $<$<STREQUAL:${ASIO_LIBRARY_TYPE},SHARED>:ASIO_DYN_LINK>
+    $<$<BOOL:${ASIO_NO_DEPRECATED}>:ASIO_NO_DEPRECATED>
   )
 
   # Fix warning : "Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately."
@@ -126,7 +171,9 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
     string(REPLACE "." "" ver ${ver})
     string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
     set(version "0x${ver}")
-    target_compile_definitions(asio PUBLIC -D_WIN32_WINNT=${version})
+    target_compile_definitions(
+      asio ${ASIO_TARGET_COMPILE_DEFINITIONS_SCOPE} -D_WIN32_WINNT=${version}
+    )
   endif()
 
 endif()

@@ -57,6 +57,8 @@ target_link_libraries(myapp PRIVATE asio::asio)
 * `ASIO_REPOSITORY`: From where asio will be downloaded. *Default `https://github.com/chriskohlhoff/asio`*
 * `ASIO_TAG`: Tag of asio that will be used. *Default: `master`*
 * `ASIO_USE_CPM`: Download Asio with CPM instead of FetchContent. *Default: `OFF`*
+* `ASIO_SEPARATE_COMPILATION`: Uses separately compiled source code for Asio's implementation. *Default: `ON`*
+* `ASIO_DYN_LINK`: Uses separately compiled source code for Asio's implementation, with symbols exported for inclusion as part of a shared library. *Note*: Available only if `ASIO_SEPARATE_COMPILATION` is `ON`. *Default: `OFF`*
 * `ASIO_NO_DEPRECATED`: Disables _Asio_ deprecated interfaces and functionality. *Default: `ON`*
 * `ASIO_CPM_FETCHCONTENT_COMPAT`: Stay compatible in a build that use FetchContent when using CPM. *Default `ON`*
   * It is recommended to set it OFF when using CPM, in order to use `CPM_SOURCE_CACHE`
