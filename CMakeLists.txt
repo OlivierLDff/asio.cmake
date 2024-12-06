@@ -52,7 +52,7 @@ option(
 )
 option(ASIO_NO_DEPRECATED "Disables Asio deprecated interfaces and functionality" ON)
 option(ASIO_SEPARATE_COMPILATION "Uses separately compiled source code for Asio's implementation"
-       ON
+  ON
 )
 if(PROJECT_IS_TOP_LEVEL AND BUILD_SHARED_LIBS)
   set(ASIO_DYN_LINK_DEFAULT_VALUE ON)
