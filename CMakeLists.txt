@@ -54,10 +54,15 @@ option(ASIO_NO_DEPRECATED "Disables Asio deprecated interfaces and functionality
 option(ASIO_SEPARATE_COMPILATION "Uses separately compiled source code for Asio's implementation"
        ON
 )
+if(PROJECT_IS_TOP_LEVEL AND BUILD_SHARED_LIBS)
+  set(ASIO_DYN_LINK_DEFAULT_VALUE ON)
+else()
+  set(ASIO_DYN_LINK_DEFAULT_VALUE OFF)
+endif()
 cmake_dependent_option(
   ASIO_DYN_LINK
   "Uses separately compiled source code for Asio's implementation, with symbols exported for inclusion as part of a shared library"
-  OFF
+  ${ASIO_DYN_LINK_DEFAULT_VALUE}
   "ASIO_SEPARATE_COMPILATION"
   OFF
 )
