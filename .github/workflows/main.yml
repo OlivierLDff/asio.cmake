@@ -23,7 +23,7 @@ jobs:
         no_deprecated: ['ON', 'OFF']
         build_type: ['Release']
         os: [ubuntu-latest, macos-latest, windows-latest]
-        cmake_version: [latestrc]
+        cmake_version: [ latestrc ]
         include:
           - use_cpm: 'ON'
             separate_compilation: 'ON'
