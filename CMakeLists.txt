@@ -104,6 +104,11 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
 
   if(ASIO_USE_CPM)
     # Include CPM only if not already initialized
+    get_property(
+      CPM_INITIALIZED GLOBAL ""
+      PROPERTY CPM_INITIALIZED
+      SET
+    )
     if(NOT CPM_INITIALIZED)
       include(cmake/get_cpm.cmake)
     endif()
