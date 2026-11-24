@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.14.0...3.24.0)
 
 project(
   asio.cmake
-  VERSION 1.3.1
+  VERSION 1.4.0
   LANGUAGES CXX
 )
 
@@ -123,8 +123,56 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
     FetchContent_Populate(asio)
   endif()
 
+  # Resolve include and src directory paths ##
+  set(ASIO_INCLUDE_DIR "${asio_SOURCE_DIR}/asio/include")
+  set(ASIO_SRC_DIR "${asio_SOURCE_DIR}/asio/src")
+  if(NOT EXISTS "${ASIO_INCLUDE_DIR}")
+    message(FATAL_ERROR "asio include directory does not exist: ${ASIO_INCLUDE_DIR}")
+  endif()
+  if(NOT EXISTS "${ASIO_SRC_DIR}")
+    message(FATAL_ERROR "asio src directory does not exist: ${ASIO_SRC_DIR}")
+  endif()
+  if(NOT IS_DIRECTORY "${ASIO_INCLUDE_DIR}")
+    file(READ "${ASIO_INCLUDE_DIR}" ASIO_INCLUDE_DIR_SYMLINK)
+    string(STRIP "${ASIO_INCLUDE_DIR_SYMLINK}" ASIO_INCLUDE_DIR_SYMLINK)
+
+    if(IS_ABSOLUTE "${ASIO_INCLUDE_DIR_SYMLINK}")
+      set(ASIO_INCLUDE_DIR "${ASIO_INCLUDE_DIR_SYMLINK}")
+    else()
+      get_filename_component(ASIO_INCLUDE_DIR_SYMLINK_PARENT_DIR "${ASIO_INCLUDE_DIR}" DIRECTORY)
+      get_filename_component(
+        ASIO_INCLUDE_DIR
+        "${ASIO_INCLUDE_DIR_SYMLINK_PARENT_DIR}/${ASIO_INCLUDE_DIR_SYMLINK}"
+        ABSOLUTE
+      )
+    endif()
+
+    if(NOT IS_DIRECTORY "${ASIO_INCLUDE_DIR}")
+      message(FATAL_ERROR "asio include directory symlink is not a directory: ${ASIO_INCLUDE_DIR}")
+    endif()
+  endif()
+  if(NOT IS_DIRECTORY "${ASIO_SRC_DIR}")
+    file(READ "${ASIO_SRC_DIR}" ASIO_SRC_DIR_SYMLINK)
+    string(STRIP "${ASIO_SRC_DIR_SYMLINK}" ASIO_SRC_DIR_SYMLINK)
+
+    if(IS_ABSOLUTE "${ASIO_SRC_DIR_SYMLINK}")
+      set(ASIO_SRC_DIR "${ASIO_SRC_DIR_SYMLINK}")
+    else()
+      get_filename_component(ASIO_SRC_DIR_SYMLINK_PARENT_DIR "${ASIO_SRC_DIR}" DIRECTORY)
+      get_filename_component(
+        ASIO_SRC_DIR
+        "${ASIO_SRC_DIR_SYMLINK_PARENT_DIR}/${ASIO_SRC_DIR_SYMLINK}"
+        ABSOLUTE
+      )
+    endif()
+
+    if(NOT IS_DIRECTORY "${ASIO_SRC_DIR}")
+      message(FATAL_ERROR "asio src directory symlink is not a directory: ${ASIO_SRC_DIR}")
+    endif()
+  endif()
+
   # Find Version ##
-  file(STRINGS "${asio_SOURCE_DIR}/asio/include/asio/version.hpp" ASIO_VERSION
+  file(STRINGS "${ASIO_INCLUDE_DIR}/asio/version.hpp" ASIO_VERSION
        REGEX "^#define ASIO_VERSION [0-9]+"
   )
   string(REGEX REPLACE "^#define ASIO_VERSION [0-9]+ // ([0-9.]+)$" "\\1" ASIO_VERSION
@@ -157,7 +205,7 @@ if(NOT asio_POPULATED AND NOT TARGET asio)
   add_library(asio::asio ALIAS asio)
   target_include_directories(
     asio SYSTEM ${ASIO_TARGET_INCLUDE_DIRECTORIES_SCOPE}
-    $<BUILD_INTERFACE:${asio_SOURCE_DIR}/asio/include>
+    $<BUILD_INTERFACE:${ASIO_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
@@ -195,7 +243,7 @@ if(ASIO_ENABLE_EXAMPLES)
   enable_testing()
   add_executable(
     asio_example_cpp11_timers_time_t_timer
-    ${asio_SOURCE_DIR}/asio/src/examples/cpp11/timers/time_t_timer.cpp
+    ${ASIO_SRC_DIR}/examples/cpp11/timers/time_t_timer.cpp
   )
   target_link_libraries(asio_example_cpp11_timers_time_t_timer PRIVATE asio::asio)
   add_custom_target(asio_examples DEPENDS asio_example_cpp11_timers_time_t_timer)
@@ -215,7 +263,7 @@ if(ASIO_ENABLE_INSTALL)
     VERSION ${ASIO_VERSION}
     NAMESPACE asio
     BINARY_DIR ${PROJECT_BINARY_DIR}
-    INCLUDE_DIR ${asio_SOURCE_DIR}/asio/include
+    INCLUDE_DIR ${ASIO_INCLUDE_DIR}
     INCLUDE_DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     DISABLE_VERSION_SUFFIX YES
     COMPATIBILITY SameMajorVersion
